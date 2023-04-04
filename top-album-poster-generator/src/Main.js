@@ -15,37 +15,51 @@ function Main() {
     spotifyApi.setAccessToken(accessToken);
   };
 
-  async function getTopTracks() {
-    const TOP_TRACKS_ENDPOINT = `https://api.spotify.com/v1/me/top/tracks`;
-
-    axios
-      .get(TOP_TRACKS_ENDPOINT, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => setTopTracks(response.data))
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
   useEffect(() => {
-    var tracks = getTopTracks();
-    setTopTracks(tracks);
+    if (token) {
+      getTopTracks();
+    }
   }, [token]);
+
+  async function getTopTracks() {
+    try {
+      console.log("spotifyApi:", spotifyApi); // Add this line
+      console.log("accessToken:", token); // Add this line
+      const response = await spotifyApi.getMyTopTracks({
+        time_range: "long_term",
+        limit: 16,
+      });
+      setTopTracks(response.items);
+      console.log(response.items);
+    } catch (err) {
+      console.error(spotifyApi.getAccessToken);
+      console.error("Error retrieving top tracks:", err.response);
+    }
+  }
 
   return (
     <div>
       {token ? (
         <div>
           <p>{token}</p>
+          {topTracks.length > 0 && (
+            <ul>
+              {topTracks.map((track) => (
+                <li key={track.id}>{track.name}</li>
+              ))}
+            </ul>
+          )}
         </div>
       ) : (
         <SpotifyAuth
           clientID="ed8e6a84c4d94b31a47fa7f4d8e8c274"
           redirectUri="http://localhost:3000/callback"
-          scopes={["streaming", "user-read-private", "user-read-email"]}
+          scopes={[
+            "streaming",
+            "user-read-private",
+            "user-read-email",
+            "user-top-read",
+          ]}
           onAccessToken={onAccessToken}
         />
       )}
