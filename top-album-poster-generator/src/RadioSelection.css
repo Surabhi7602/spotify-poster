@@ -1,0 +1,23 @@
+.radioContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  justify-content: center;
+  }
+  
+  .radioLabel {
+    margin-right: 16px;
+    font-size: 22px;
+    margin-bottom: 56px;
+    font-family: Hind Siliguri, sans-serif;
+   
+  }
+  
+  /* Style for selected radio button */
+  input[type='radio']:checked + span::before {
+    content: '\2022';
+    font-size: 18px;
+    color: #007bff;
+    margin-right: 8px;
+  }
+  

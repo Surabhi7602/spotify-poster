@@ -1,29 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { SpotifyAuth, Scopes } from "react-spotify-auth";
 import SpotifyWebApi from "spotify-web-api-js";
+import "react-spotify-auth/dist/index.css";
 import "./Main.css";
+import "./RadioSelection.css"; // Import the CSS file for styling
 
 const spotifyApi = new SpotifyWebApi();
 
-function Main() {
+export default function Main() {
   const [token, setToken] = useState(null);
-  const [topTracks, setTopTracks] = useState([]);
-
-  const [base, setBase] = useState(null);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [completed, setCompleted] = useState(null);
 
   const onAccessToken = (accessToken) => {
     setToken(accessToken);
     spotifyApi.setAccessToken(accessToken);
   };
 
+  const handleOptionChange = (event) => {
+    setSelectedOption(event.target.value);
+    setCompleted(null);
+  };
+
   async function getTopTracks() {
     try {
       const response = await spotifyApi.getMyTopTracks({
-        time_range: "long_term",
+        time_range: selectedOption,
         limit: 16,
       });
-      setTopTracks(response.items);
-      console.log(response.items);
+
       if (response.items.length > 0) {
         generateAlbumUrls(response.items);
       }
@@ -92,7 +97,8 @@ function Main() {
         }
 
         let b64Data = canvas.toDataURL();
-        setBase(b64Data);
+
+        linkfunction(b64Data);
       })
       .catch(function (err) {
         console.log("One or more images did not load");
@@ -110,6 +116,7 @@ function Main() {
     link.href = objurl;
 
     link.click();
+    setCompleted("done");
   }
 
   function dataURLtoBlob(dataurl) {
@@ -128,29 +135,114 @@ function Main() {
     <div>
       <div>
         {token ? (
-          <button onClick={() => getTopTracks()}>Get Top Tracks</button>
+          <div>
+            <h3
+              style={{
+                display: "block",
+                fontSize: "30px",
+                fontWeight: "bold",
+                fontFamily: "Hind Siliguri, sans-serif",
+              }}
+            >
+              Select a Time Frame:
+            </h3>
+            <div className="radioContainer">
+              <label className="radioLabel">
+                <input
+                  type="radio"
+                  value="long_term"
+                  checked={selectedOption === "long_term"}
+                  onChange={handleOptionChange}
+                />
+                Overall
+              </label>
+              <label className="radioLabel">
+                <input
+                  type="radio"
+                  value="medium_term"
+                  checked={selectedOption === "medium_term"}
+                  onChange={handleOptionChange}
+                />
+                Last 6 Months
+              </label>
+              <label className="radioLabel">
+                <input
+                  type="radio"
+                  value="short_term"
+                  checked={selectedOption === "short_term"}
+                  onChange={handleOptionChange}
+                />
+                Last 4 Weeks
+              </label>
+            </div>
+          </div>
         ) : (
-          <SpotifyAuth
-            clientID="ed8e6a84c4d94b31a47fa7f4d8e8c274"
-            redirectUri="http://localhost:3000/callback"
-            scopes={[
-              "streaming",
-              "user-read-private",
-              "user-read-email",
-              "user-top-read",
-            ]}
-            onAccessToken={onAccessToken}
-          />
+          <div style={{}}>
+            <div>
+              <p
+                style={{
+                  display: "block",
+                  fontSize: "40px",
+                  fontWeight: "bold",
+                  fontFamily: "Hind Siliguri, sans-serif",
+                }}
+              >
+                Generate a poster from your top tracks on Spotify!
+              </p>
+            </div>
+            <br></br>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <SpotifyAuth
+                clientID="ed8e6a84c4d94b31a47fa7f4d8e8c274"
+                redirectUri="http://localhost:3000/callback"
+                scopes={[
+                  "streaming",
+                  "user-read-private",
+                  "user-read-email",
+                  "user-top-read",
+                ]}
+                onAccessToken={onAccessToken}
+              />
+            </div>
+          </div>
         )}
       </div>
 
-      {base ? (
-        <button onClick={() => linkfunction(base)}>Download Image</button>
+      {selectedOption && !completed ? (
+        <button
+          style={{
+            fontSize: "18px",
+            fontWeight: "bold",
+            fontFamily: "Hind Siliguri, sans-serif",
+          }}
+          onClick={() => getTopTracks()}
+        >
+          Generate Poster
+        </button>
+      ) : (
+        <div></div>
+      )}
+
+      {selectedOption && completed ? (
+        <div
+          style={{
+            display: "block",
+            fontSize: "30px",
+            fontWeight: "bold",
+            fontFamily: "Hind Siliguri, sans-serif",
+          }}
+        >
+          Download Complete!
+        </div>
       ) : (
         <div></div>
       )}
     </div>
   );
 }
-
-export default Main;
