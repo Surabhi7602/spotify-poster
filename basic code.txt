@@ -1,0 +1,69 @@
+import { useState, useEffect } from 'react';
+import SpotifyWebApi from 'spotify-web-api-js';
+
+const spotifyApi = new SpotifyWebApi();
+
+function App() {
+  const [accessToken, setAccessToken] = useState(null);
+  const [topTracks, setTopTracks] = useState([]);
+  const [albumCovers, setAlbumCovers] = useState([]);
+
+  useEffect(() => {
+    // Get access token from Spotify
+    const hash = window.location.hash
+      .substring(1)
+      .split('&')
+      .reduce(function (initial, item) {
+        if (item) {
+          var parts = item.split('=');
+          initial[parts[0]] = decodeURIComponent(parts[1]);
+        }
+        return initial;
+      }, {});
+    window.location.hash = '';
+    let _accessToken = hash.access_token;
+
+    if (_accessToken) {
+      setAccessToken(_accessToken);
+      spotifyApi.setAccessToken(_accessToken);
+
+      // Get user's top tracks
+      spotifyApi.getMyTopTracks({ limit: 24 }).then((data) => {
+        setTopTracks(data.items);
+
+        // Get album covers for each track's album
+        const albumIds = data.items.map((track) => track.album.id);
+        spotifyApi.getAlbums(albumIds).then((data) => {
+          setAlbumCovers(data.albums.map((album) => album.images[0].url));
+        });
+      });
+    }
+  }, []);
+
+  return (
+    <div>
+      {!accessToken && (
+        <a
+          href={`${process.env.REACT_APP_SPOTIFY_AUTH_ENDPOINT}?client_id=${process.env.REACT_APP_SPOTIFY_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_SPOTIFY_REDIRECT_URI}&response_type=token&show_dialog=true`}
+        >
+          Login with Spotify
+        </a>
+      )}
+      {accessToken && (
+        <div>
+          <h1>My Top Tracks</h1>
+          <ul>
+            {topTracks.map((track, index) => (
+              <li key={track.id}>
+                <img src={albumCovers[index]} alt={track.album.name} />
+                {track.name} by {track.artists[0].name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;

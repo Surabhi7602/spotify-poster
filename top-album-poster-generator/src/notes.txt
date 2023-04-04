@@ -1,0 +1,1 @@
+remember to add the callback url to the settings on the developer dashboard otherwise your login will not work properly
