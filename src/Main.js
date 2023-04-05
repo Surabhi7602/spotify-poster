@@ -202,7 +202,7 @@ export default function Main() {
                 clientID="ed8e6a84c4d94b31a47fa7f4d8e8c274"
                 // http://localhost:3000/callback
                 redirectUri="https://spotify-poster-virid.vercel.app/"
-                https:scopes={["user-top-read"]}
+                scopes={["user-top-read"]}
                 onAccessToken={onAccessToken}
               />
             </div>
