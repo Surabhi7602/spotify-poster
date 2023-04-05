@@ -200,8 +200,9 @@ export default function Main() {
             >
               <SpotifyAuth
                 clientID="ed8e6a84c4d94b31a47fa7f4d8e8c274"
-                redirectUri="http://localhost:3000/callback"
-                scopes={[
+                // http://localhost:3000/callback
+                redirectUri="https://spotify-poster-virid.vercel.app/"
+                https:scopes={[
                   "streaming",
                   "user-read-private",
                   "user-read-email",
