@@ -1,6 +1,6 @@
-##This app allows Spotify users to generate a poster using the album covers of their 16 most listened to tracks during 3 time-frames (past month, past 6 months, overall).
+## This app allows Spotify users to generate a poster using the album covers of their 16 most listened to tracks during 3 time-frames (past month, past 6 months, overall).
 
-###Check it out here: https://main--lucky-klepon-c606c0.netlify.app/
+### Check it out here: https://main--lucky-klepon-c606c0.netlify.app/
 
 
 # Getting Started with Create React App
